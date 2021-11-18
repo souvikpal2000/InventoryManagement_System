@@ -43,6 +43,7 @@ a:focus {
 #sidebar .sidebar-header {
     padding: 20px;
     background: #6d7fcc;
+    margin-bottom: 1rem;
 }
 #sidebar .sidebar-header h3{
     font-size: 25px;
@@ -81,6 +82,41 @@ ul ul a {
     min-height: 100vh;
     transition: all 0.3s;
 }
+
+/* Login Page Styling */
+.loginContainer{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loginImgDiv{
+    padding-right: 3rem;
+}
+.loginImg{
+    width: 450px;
+}
+.loginForm{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 3rem;
+}
+.loginMessage{
+    margin-top: 1.5rem;
+    box-sizing: border-box;
+}
+.message{
+    font-size: 15px;
+}
+.box{
+    box-shadow: -1px 0px 20px 0px rgba(0,0,0,0.75);
+    border-radius: 20px;
+    height: 80% !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 @media (max-width: 768px) {
     #sidebar {
         margin-left: -250px;
@@ -90,5 +126,28 @@ ul ul a {
     }
     #sidebarCollapse span {
         display: none;
+    }
+    .box{
+        height: 95% !important;
+    }
+    .loginImgDiv{
+        padding-bottom: 4rem;
+    }
+    .loginImg{
+        width: 400px !important;
+    }
+}
+@media (max-width: 989px) {
+    .loginImgDiv{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-right: 15px;
+    }
+    .loginImg{
+        width: 340px;
+    }
+    .loginForm{
+        padding-left: 15px;
     }
 }
