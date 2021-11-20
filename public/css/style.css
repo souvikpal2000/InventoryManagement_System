@@ -117,6 +117,51 @@ ul ul a {
     justify-content: center;
     align-items: center;
 }
+.row{
+    width: 95% !important;
+}
+.welcome{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+textarea {
+    resize: none;
+}
+.buttonWithMessage{
+    display: flex;
+}
+.buttonWithMessage button, .buttonWithMessage .alert{
+    height: 3rem;
+}
+.alert{
+    margin: 0 !important;
+    margin-left: auto !important;
+}
+#table_id_wrapper{
+    margin-top: 2rem;
+}
+.actions{
+    display: flex;
+}
+.fa-user-edit, .fa-trash-alt{
+    margin: 0.5rem;
+    cursor: pointer;
+}
+.fa-user-edit{
+    color: rgb(71, 201, 71)
+}
+.fa-trash-alt{
+    color: red;
+}
+.deleteButton{
+    background-color: inherit;
+    padding: 0;
+    border: none;
+}
+#table_id_filter input[type=search]:focus{
+    border: none !important;
+}
 @media (max-width: 768px) {
     #sidebar {
         margin-left: -250px;

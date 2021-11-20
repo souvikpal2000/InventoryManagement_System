@@ -1,0 +1,29 @@
+{
+  "name": "inventorymanagement_system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js -e js,ejs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souvikpal2000/InventoryManagement_System.git"
+  },
+  "author": "Souvik Pal & Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/souvikpal2000/InventoryManagement_System/issues"
+  },
+  "homepage": "https://github.com/souvikpal2000/InventoryManagement_System#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql": "^2.18.1"
+  }
+}

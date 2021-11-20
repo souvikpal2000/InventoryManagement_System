@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/headerLinks') %>
+    <title>Add Cashier</title>
+</head>
+<body>
+    <div class="wrapper">
+        <%- include('../partials/sideNavbar') %>
+        <div id="content">
+            <%- include('../partials/navbar') %>
+            <div class="buttonWithMessage">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+                    Add Cashier
+                </button>
+                <% if(message=="fail"){ %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Username</strong> Already Existed!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% }else if(message=="success"){ %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Cashier's Details</strong> Successfully Registered.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% }else if(message=="edited"){ %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Cashier's Details</strong> Edited.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% }else if(message=="deleted"){ %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Cashier's Details</strong> Deleted!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% } %>
+            </div>
+
+
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalCenterTitle">Add Cashier</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="/cashier" method="POST">
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Full Name</label>
+                                        <input type="text" name="fullname" class="form-control" placeholder="Enter Name" autocomplete="off" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Email</label>
+                                        <input type="email" name="email" class="form-control" placeholder="Enter Email" autocomplete="off" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Phone</label>
+                                        <input type="number" name="phone" class="form-control" placeholder="Enter Phone" autocomplete="off" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Address</label>
+                                        <textarea type="text" name="address" class="form-control" rows="5" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Username</label>
+                                        <input type="text" name="username" class="form-control" placeholder="Enter Username" autocomplete="off" required>   
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Password</label>
+                                        <input type="password" name="password" class="form-control" placeholder="Enter Password" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tableContainer">
+                <% if(datas.length > 0){ %>
+                    <table id="table_id" class="display table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Sl No.</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone No.</th>
+                                <th style="max-width: 150px;">Address</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% let count = 1 %>
+                            <% datas.forEach((data) => { %>
+                                <% let {id, fullname, email, phone, address, username, password} = data %>
+                                <tr id="<%= id %>">
+                                    <td><%= count %></td>
+                                    <td class="fullname"><%= fullname %></td>
+                                    <td class="email"><%= email %></td>
+                                    <td class="phone"><%= phone %></td>
+                                    <td class="address" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis;" data-toggle="tooltip" data-placement="right" title="<%= address %>"><%= address %></td>
+                                    <td class="username"><%= username %></td>
+                                    <td class="password"><%= password %></td>
+                                    <td>
+                                        <div class="actions">
+                                            <i class="fas fa-user-edit" data-toggle="modal" data-target="#editModal" onclick="fillData('<%= id %>')"></i>
+                                            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalCenterTitle">Edit Cashier</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <form action="/cashier/edit/<%= id %>" method="POST">
+                                                            <div class="modal-body editModal">
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Full Name</label>
+                                                                        <input type="text" name="fullname" class="form-control" placeholder="Enter Name" autocomplete="off" required>
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Email</label>
+                                                                        <input type="email" name="email" class="form-control" placeholder="Enter Email" autocomplete="off" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Phone</label>
+                                                                        <input type="number" name="phone" class="form-control" placeholder="Enter Phone" autocomplete="off" required>
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Address</label>
+                                                                        <textarea type="text" name="address" class="form-control" rows="5" required></textarea>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Username</label>
+                                                                        <input type="text" name="username" class="form-control" placeholder="Enter Username" autocomplete="off" required>   
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Password</label>
+                                                                        <input type="password" name="password" class="form-control" placeholder="Enter Password" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-primary">Edit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <form action="/cashier/delete/<%= id %>" method="POST">
+                                                <button class="deleteButton"><i class="fas fa-trash-alt"></i></button>
+                                            </form> 
+                                        </div>
+                                    </td>
+                                </tr>
+                                <% count++ %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+<%- include('../partials/footerLinks') %>
+</html>

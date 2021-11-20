@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/headerLinks') %>
+    <title>Login</title>
+</head>
+<body>
+    <div class="container loginContainer">
+        <div class="col-md-12 col-12 box">
+            <div class="row">
+                <div class="col-12 col-md-6 loginImgDiv">
+                    <img class="loginImg" src="images/login.jpg" />
+                </div>
+                <div class="col-12 col-md-6 loginForm">
+                    <div style="width: 100%">
+                        <h2>Login</h2>
+                        <div class="loginMessage">
+                            <% if(message){ %>
+                                <p class="text-danger message"><%= message %></p>
+                            <% } %>
+                        </div>
+                        <form action="/" method="POST">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <label class="input-group-text" for="inputGroupSelect01">User Type</label>
+                                </div>
+                                <select name="usertype" class="custom-select" id="inputGroupSelect01">
+                                    <option value="Admin">Admin</option>
+                                    <option value="Cashier">Cashier</option>
+                                </select>
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-default">Username</span>
+                                </div>
+                                <input type="text" name="username" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" autocomplete="off" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-default">Password</span>
+                                </div>
+                                <input type="password" name="password" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" required>
+                            </div>
+                            <button class="btn btn-primary">Login</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<%- include('../partials/footerLinks') %>
+</html>

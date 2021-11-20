@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/headerLinks') %>
+    <title>Product</title>
+</head>
+<body>
+    <div class="wrapper">
+        <%- include('../partials/sideNavbar') %>
+        <div id="content">
+            <%- include('../partials/navbar') %>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#addProduct">Add Product</button>
+            <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Add Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <form method="POST">
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Supplier</label>
+                                        <input type="text" class="form-control" name="supplier" list="supplier" />
+                                        <datalist id="supplier">
+                                            
+                                        </datalist>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Product Code</label>
+                                        <input type="text" class="form-control" name="productCode" placeholder="Product Code">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Brand Name</label>
+                                        <input type="text" class="form-control" name="brand" placeholder="Brand Name">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Product Name</label>
+                                        <input type="text" class="form-control" name="productName" placeholder="Product Name">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Product Unit</label>
+                                        <select name="unit" id="inputState" class="form-control">
+                                            <option selected value="mg">mg</option>
+                                            <option value="Gram">g</option>
+                                            <option value="kg">kg</option>
+                                            <option value="ml">ml</option>
+                                            <option value="l">l</option>
+                                            <option value="kl">kl</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Quantity</label>
+                                        <input type="number" class="form-control" name="quantity" placeholder="Quantity">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Cost</label>
+                                        <input type="number" class="form-control" name="cp" placeholder="Cost Price">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>SRP</label>
+                                        <input type="number" class="form-control" name="srp" placeholder="Suggested Retail Price">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Date Delivered</label>
+                                        <input type="date" class="form-control" name="dd">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Expiration Date</label>
+                                        <input type="date" class="form-control" name="ed">
+                                    </div>
+                                </div>
+                            </div> 
+                            <div class="modal-footer">
+                                <button class="btn btn-primary">Save</button>
+                            </div>
+                        </form>     
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<%- include('../partials/footerLinks') %>
+</html>
