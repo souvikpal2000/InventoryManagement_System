@@ -17,10 +17,12 @@ $(document).ready(function() {
 } );
 
 function fillData(id){
+    document.querySelector(".editForm").setAttribute("action", `/cashier/edit/${id}`); 
+
     document.querySelector('.editModal input[name=fullname]').value = document.querySelector(`[id="${id}"] .fullname`).innerHTML;
     document.querySelector('.editModal input[name=email]').value = document.querySelector(`[id="${id}"] .email`).innerHTML;
     document.querySelector('.editModal input[name=phone]').value = document.querySelector(`[id="${id}"] .phone`).innerHTML;
-    document.querySelector('.editModal textarea[name=address]').innerHTML = document.querySelector(`[id="${id}"] .address`).innerHTML;
+    document.querySelector('.editModal textarea[name=address]').textContent = document.querySelector(`[id="${id}"] .address`).textContent;
     document.querySelector('.editModal input[name=username]').value = document.querySelector(`[id="${id}"] .username`).innerHTML;
     document.querySelector('.editModal input[name=password]').value = document.querySelector(`[id="${id}"] .password`).innerHTML;
 }
