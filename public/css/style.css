@@ -138,7 +138,7 @@ textarea {
     margin: 0 !important;
     margin-left: auto !important;
 }
-#table_id_wrapper{
+#table_id_wrapper, .tableContainer{
     margin-top: 2rem;
 }
 .actions{

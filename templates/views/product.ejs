@@ -9,7 +9,25 @@
         <%- include('../partials/sideNavbar') %>
         <div id="content">
             <%- include('../partials/navbar') %>
-            <button class="btn btn-primary" data-toggle="modal" data-target="#addProduct">Add Product</button>
+            <div class="buttonWithMessage">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#addProduct">Add Product</button>
+                <% if(message=="fail"){ %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Item of this <strong>Product Code</strong> Already Existed!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% }else if(message=="success"){ %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Product</strong> Successfully Added.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% } %>
+            </div>
+            
             <div class="modal fade" id="addProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -19,56 +37,57 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                         </div>
-                        <form method="POST">
+                        <form action="/product" method="POST">
                             <div class="modal-body">
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label>Supplier</label>
-                                        <input type="text" class="form-control" name="supplier" list="supplier" />
+                                        <input type="text" class="form-control" name="supplier" list="supplier"/>
                                         <datalist id="supplier">
-                                            
+                                            <% names.forEach(name => { %>
+                                                <% let {supplier} = name %>
+                                                <option><%= supplier %></option>
+                                            <% }) %>
                                         </datalist>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label>Product Code</label>
-                                        <input type="text" class="form-control" name="productCode" placeholder="Product Code">
+                                        <input type="text" class="form-control" name="productCode" placeholder="Product Code" required>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label>Brand Name</label>
-                                        <input type="text" class="form-control" name="brand" placeholder="Brand Name">
+                                        <input type="text" class="form-control" name="brand" placeholder="Brand Name" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label>Product Name</label>
-                                        <input type="text" class="form-control" name="productName" placeholder="Product Name">
+                                        <input type="text" class="form-control" name="productName" placeholder="Product Name" required>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label>Product Unit</label>
-                                        <select name="unit" id="inputState" class="form-control">
-                                            <option selected value="mg">mg</option>
-                                            <option value="Gram">g</option>
-                                            <option value="kg">kg</option>
-                                            <option value="ml">ml</option>
-                                            <option value="l">l</option>
-                                            <option value="kl">kl</option>
+                                        <select name="unit" id="inputState" class="form-control" required>
+                                            <option>Select Product Unit</option>
+                                            <option value="piece">Per Piece</option>
+                                            <option value="pack">Per Pack</option>
+                                            <option value="box">Per Box</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label>Quantity</label>
-                                        <input type="number" class="form-control" name="quantity" placeholder="Quantity">
+                                        <input type="number" class="form-control" name="quantity" placeholder="Quantity" required>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group col-md-6">
                                         <label>Cost</label>
-                                        <input type="number" class="form-control" name="cp" placeholder="Cost Price">
+                                        <input type="number" class="form-control" name="cp" placeholder="Cost Price" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label>SRP</label>
-                                        <input type="number" class="form-control" name="srp" placeholder="Suggested Retail Price">
+                                        <input type="number" class="form-control" name="srp" placeholder="Suggested Retail Price" required>
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -78,7 +97,7 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label>Expiration Date</label>
-                                        <input type="date" class="form-control" name="ed">
+                                        <input type="date" class="form-control" name="ed" required>
                                     </div>
                                 </div>
                             </div> 
@@ -88,6 +107,48 @@
                         </form>     
                     </div>
                 </div>
+            </div>
+            <div class="tableContainer">
+                <% if(datas.length > 0){ %>
+                    <table id="table_id2" class="display table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Sl No.</th>
+                                <th>Supplier</th>
+                                <th>Product Code</th>
+                                <th>Brand Name</th>
+                                <th>Product Name</th>
+                                <th>Product Unit</th>
+                                <th>Quantity Left</th>
+                                <th>Cost Price</th>
+                                <th>Suggested Retail Price</th>
+                                <th>Date of Expiration</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% let count = 1 %>
+                            <% datas.forEach(data => { %>
+                                <% let {id, supplier, productCode, brandName, productName, productUnit, quantity, cost, srp, dateExp} = data; %>
+                                <% let month = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %>
+                                <tr id="<%= id %>">
+                                    <td><%= count %></td>
+                                    <td><%= supplier %></td>
+                                    <td><%= productCode %></td>
+                                    <td><%= brandName %></td>
+                                    <td><%= productName %></td>
+                                    <td><%= productUnit %></td>
+                                    <td><%= quantity %></td>
+                                    <td><%= cost %></td>
+                                    <td><%= srp %></td>
+                                    <td><%= month[new Date(dateExp).getMonth()] + " " + new Date(dateExp).getFullYear() %></td>
+                                    <td></td>
+                                </tr>
+                                <% count++ %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } %>
             </div>
         </div>
     </div>

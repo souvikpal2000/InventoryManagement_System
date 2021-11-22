@@ -53,28 +53,65 @@ app.post("/", (req, res) => {
 });
 
 app.get("/product", auth, (req, res) => {
-    if (req.usertype == "Admin") {
-        return res.render("product", { usertype: "Admin" });
+    if (req.usertype != "Admin") {
+        return res.redirect("/");
     }
-    res.redirect("/");
+    let query = "SELECT * FROM products";
+    connection.query(query, (err,rows) => {
+        if(!err){
+            let query = "SELECT DISTINCT supplier FROM products";
+            connection.query(query, (err,suppliers) => {
+                if(!err){
+                    return res.render("product", { usertype: "Admin", datas: rows, names: suppliers, message: req.query.message });
+                }
+                return console.log(err);
+            })
+            return;
+        }
+        console.log(err);
+    })
 });
+
+app.post("/product", auth, (req,res) => {
+    if(req.usertype != "Admin"){
+        return res.redirect("/");
+    }
+    let {supplier, productCode, brand, productName, unit, quantity, cp, srp, dd, ed} = req.body; 
+    let query = "SELECT * FROM products WHERE productCode=?"
+    connection.query(query, [productCode], (err,rows) => {
+        if(!err){
+            if(rows.length > 0){
+                return res.redirect("/product/?message=fail");
+            }
+            query = "INSERT INTO products (supplier, productCode, brandName, productName, productUnit, quantity, cost, srp, dateDeli, dateExp) VALUES ?";
+            const values = [[supplier, productCode, brand, productName, unit, quantity, cp, srp, dd, ed]]
+            connection.query(query, [values], (err,datas) => {
+                if(!err){
+                    return res.redirect("/product/?message=success");
+                }
+                console.log(err);
+            });
+        }
+    })
+    
+})
 
 app.get("/cashier", auth, (req, res) => {
     if (req.usertype != "Admin") {
         return res.redirect("/");
     }
     const query = "SELECT * FROM users WHERE usertype=?";
-    connection.query(query, ["Cashier"], (err,rows) => {
-        if(!err){
+    connection.query(query, ["Cashier"], (err, rows) => {
+        if (!err) {
             res.render("addCashier", { usertype: "Admin", message: req.query.message, datas: rows });
-        }else{
+        } else {
             console.log(err);
         }
     });
 });
 
 app.post("/cashier", auth, (req, res) => {
-    if(req.usertype != "Admin"){
+    if (req.usertype != "Admin") {
         return res.redirect("/");
     }
     let query = "SELECT * FROM users WHERE username=?";
@@ -99,27 +136,27 @@ app.post("/cashier", auth, (req, res) => {
     })
 });
 
-app.post("/cashier/edit/:id", auth, (req,res) => {
-    if(req.usertype != "Admin"){
+app.post("/cashier/edit/:id", auth, (req, res) => {
+    if (req.usertype != "Admin") {
         return res.redirect("/");
     }
     let query = "UPDATE users SET fullname=?, email=?, phone=?, address=?, username=?, password=? WHERE id=?";
     let { fullname, email, phone, address, username, password } = req.body;
-    connection.query(query, [fullname, email, phone, address, username, password, req.params.id], (err,rows) => {
-        if(!err){
+    connection.query(query, [fullname, email, phone, address, username, password, req.params.id], (err, rows) => {
+        if (!err) {
             return res.redirect("/cashier/?message=edited");
         }
         console.log(err);
     });
 });
 
-app.post("/cashier/delete/:id", auth, (req,res) => {
-    if(req.usertype != "Admin"){
+app.post("/cashier/delete/:id", auth, (req, res) => {
+    if (req.usertype != "Admin") {
         return res.redirect("/");
     }
     let query = "DELETE FROM users WHERE id=?";
     connection.query(query, [req.params.id], (err, rows) => {
-        if(!err){
+        if (!err) {
             return res.redirect("/cashier/?message=deleted");
         }
         console.log(err);
@@ -127,14 +164,14 @@ app.post("/cashier/delete/:id", auth, (req,res) => {
 })
 
 app.get("/cashpayment", auth, (req, res) => {
-    if(req.usertype == "Cashier"){
+    if (req.usertype == "Cashier") {
         return res.render("cashPayment", { usertype: "Cashier" });
     }
     res.redirect("/");
 });
 
 app.get("/creditpayment", auth, (req, res) => {
-    if(req.usertype == "Cashier"){
+    if (req.usertype == "Cashier") {
         return res.render("creditPayment", { usertype: "Cashier" });
     }
     res.redirect("/");
@@ -167,7 +204,7 @@ app.get("/createtables", (req, res) => {
     })
 
     //Create Table Product
-    query = "CREATE TABLE IF NOT EXISTS `product` ( `id` BIGINT NOT NULL AUTO_INCREMENT , `supplier` VARCHAR(255), `productCode` VARCHAR(255) NOT NULL , `brandName` VARCHAR(255) NOT NULL , `productName` VARCHAR(255) NOT NULL , `productUnit` VARCHAR(20) NOT NULL , `quantity` INT NOT NULL , `cost` INT NOT NULL , `srp` INT , `dateDeli` DATE , `dateExp` DATE NOT NULL , PRIMARY KEY (`id`))"
+    query = "CREATE TABLE IF NOT EXISTS `products` ( `id` BIGINT NOT NULL AUTO_INCREMENT , `supplier` VARCHAR(255), `productCode` VARCHAR(255) NOT NULL , `brandName` VARCHAR(255) NOT NULL , `productName` VARCHAR(255) NOT NULL , `productUnit` VARCHAR(20) NOT NULL , `quantity` INT NOT NULL , `cost` INT NOT NULL , `srp` INT , `dateDeli` DATE , `dateExp` DATE NOT NULL , PRIMARY KEY (`id`))"
     connection.query(query, (err, row) => {
         if (err) {
             console.log(err);
