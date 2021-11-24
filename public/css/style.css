@@ -144,11 +144,11 @@ textarea {
 .actions{
     display: flex;
 }
-.fa-user-edit, .fa-trash-alt{
+.fa-user-edit, .fa-trash-alt, .fa-edit{
     margin: 0.5rem;
     cursor: pointer;
 }
-.fa-user-edit{
+.fa-user-edit, .fa-edit{
     color: rgb(71, 201, 71)
 }
 .fa-trash-alt{

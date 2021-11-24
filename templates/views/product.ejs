@@ -25,6 +25,20 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
+                <% }else if(message=="edited"){ %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Product's Details</strong> Edited.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                <% }else if(message=="deleted"){ %>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Product </strong> Deleted!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                 <% } %>
             </div>
             
@@ -133,16 +147,93 @@
                                 <% let month = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %>
                                 <tr id="<%= id %>">
                                     <td><%= count %></td>
-                                    <td><%= supplier %></td>
-                                    <td><%= productCode %></td>
-                                    <td><%= brandName %></td>
-                                    <td><%= productName %></td>
-                                    <td><%= productUnit %></td>
-                                    <td><%= quantity %></td>
-                                    <td><%= cost %></td>
-                                    <td><%= srp %></td>
-                                    <td><%= month[new Date(dateExp).getMonth()] + " " + new Date(dateExp).getFullYear() %></td>
-                                    <td></td>
+                                    <td class="supplier"><%= supplier %></td>
+                                    <td class="productCode"><%= productCode %></td>
+                                    <td class="brandName"><%= brandName %></td>
+                                    <td class="productName"><%= productName %></td>
+                                    <td class="productUnit"><%= productUnit %></td>
+                                    <td class="quantity"><%= quantity %></td>
+                                    <td class="cost"><%= cost %></td>
+                                    <td class="srp"><%= srp %></td>
+                                    <td class="ed"><%= month[new Date(dateExp).getMonth()] + " " + new Date(dateExp).getFullYear() %></td>
+                                    <td>
+                                        <div class="actions">
+                                            <i class="fas fa-edit" data-toggle="modal" data-target="#editModal2" onclick="fillData2('<%= id %>')"></i>
+                                            <div class="modal fade" id="editModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalCenterTitle">Edit Product</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <form class="editForm2" method="POST">
+                                                            <div class="modal-body editModal2">
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Supplier</label>
+                                                                        <input type="text" class="form-control" name="supplier" list="supplier"/>
+                                                                        <datalist id="supplier">
+                                                                            <% names.forEach(name => { %>
+                                                                                <% let {supplier} = name %>
+                                                                                <option><%= supplier %></option>
+                                                                            <% }) %>
+                                                                        </datalist>
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Product Code</label>
+                                                                        <input type="text" class="form-control" name="productCode" placeholder="Product Code" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Brand Name</label>
+                                                                        <input type="text" class="form-control" name="brand" placeholder="Brand Name" required>
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Product Name</label>
+                                                                        <input type="text" class="form-control" name="productName" placeholder="Product Name" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Product Unit</label>
+                                                                        <select name="unit" id="inputState" class="form-control" required>
+                                                                            <option>Select Product Unit</option>
+                                                                            <option value="piece">Per Piece</option>
+                                                                            <option value="pack">Per Pack</option>
+                                                                            <option value="box">Per Box</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Quantity</label>
+                                                                        <input type="number" class="form-control" name="quantity" placeholder="Quantity" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>Cost</label>
+                                                                        <input type="number" class="form-control" name="cp" placeholder="Cost Price" required>
+                                                                    </div>
+                                                                    <div class="form-group col-md-6">
+                                                                        <label>SRP</label>
+                                                                        <input type="number" class="form-control" name="srp" placeholder="Suggested Retail Price" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-primary">Edit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <form action="/product/delete/<%= id %>" method="POST">
+                                                <button class="deleteButton"><i class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <% count++ %>
                             <% }) %>

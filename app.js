@@ -94,7 +94,34 @@ app.post("/product", auth, (req,res) => {
         }
     })
     
-})
+});
+
+app.post("/product/edit/:id", auth, (req,res) => {
+    if(req.usertype != "Admin"){
+        return res.redirect("/");
+    }
+    const query = "UPDATE products SET supplier=?, productCode=?, brandName=?, productName=?, productUnit=?, quantity=?, cost=?, srp=? WHERE id=?";
+    let { supplier, productCode, brand, productName, unit, quantity, cp, srp } = req.body;
+    connection.query(query, [supplier, productCode, brand, productName, unit, quantity, cp, srp, req.params.id], (err, rows) => {
+        if(!err){
+            return res.redirect('/product/?message=edited');
+        }
+        console.log(err);
+    })
+});
+
+app.post("/product/delete/:id", auth, (req,res) => {
+    if(req.usertype != "Admin"){
+        return res.redirect("/");
+    }
+    const query = "DELETE FROM products WHERE id=?";
+    connection.query(query, [req.params.id], (err,rows) => {
+        if(!err){
+            return res.redirect("/product/?message=deleted");
+        }
+        console.log(err);
+    })
+});
 
 app.get("/cashier", auth, (req, res) => {
     if (req.usertype != "Admin") {

@@ -34,3 +34,16 @@ function fillData(id) {
     document.querySelector('.editModal input[name=username]').value = document.querySelector(`[id="${id}"] .username`).innerHTML;
     document.querySelector('.editModal input[name=password]').value = document.querySelector(`[id="${id}"] .password`).innerHTML;
 }
+
+function fillData2(id) {
+    document.querySelector(".editForm2").setAttribute("action", `/product/edit/${id}`);
+
+    document.querySelector('.editModal2 input[name=supplier]').value = document.querySelector(`[id="${id}"] .supplier`).innerHTML;
+    document.querySelector('.editModal2 input[name=productCode]').value = document.querySelector(`[id="${id}"] .productCode`).innerHTML;
+    document.querySelector('.editModal2 input[name=brand]').value = document.querySelector(`[id="${id}"] .brandName`).innerHTML;
+    document.querySelector('.editModal2 input[name=productName]').value = document.querySelector(`[id="${id}"] .productName`).innerHTML;
+    document.querySelector('.editModal2 select[name=unit]').value = document.querySelector(`[id="${id}"] .productUnit`).innerHTML;
+    document.querySelector('.editModal2 input[name=quantity]').value = document.querySelector(`[id="${id}"] .quantity`).innerHTML;
+    document.querySelector('.editModal2 input[name=cp]').value = document.querySelector(`[id="${id}"] .cost`).innerHTML;
+    document.querySelector('.editModal2 input[name=srp]').value = document.querySelector(`[id="${id}"] .srp`).innerHTML;
+}
