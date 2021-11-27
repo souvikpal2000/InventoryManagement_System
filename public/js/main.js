@@ -47,3 +47,11 @@ function fillData2(id) {
     document.querySelector('.editModal2 input[name=cp]').value = document.querySelector(`[id="${id}"] .cost`).innerHTML;
     document.querySelector('.editModal2 input[name=srp]').value = document.querySelector(`[id="${id}"] .srp`).innerHTML;
 }
+
+new TomSelect("#select-state",{
+    create: false,
+    sortField: {
+        field: "text",
+        direction: "asc"
+    }
+});

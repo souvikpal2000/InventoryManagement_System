@@ -17,7 +17,12 @@ app.set("views", viewsPath);
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+let customerItems = [];
+var count;
+
 app.get("/", auth, (req, res) => {
+    customerItems = [];
+    count = 1;
     if (req.usertype == "Admin") {
         return res.render("home", { usertype: "Admin" });
     }
@@ -90,17 +95,18 @@ app.post("/product", auth, (req,res) => {
                     return res.redirect("/product/?message=success");
                 }
                 console.log(err);
-            });
+            })
+            return;
         }
+        console.log(err);
     })
-    
 });
 
 app.post("/product/edit/:id", auth, (req,res) => {
     if(req.usertype != "Admin"){
         return res.redirect("/");
     }
-    const query = "UPDATE products SET supplier=?, productCode=?, brandName=?, productName=?, productUnit=?, quantity=?, cost=?, srp=? WHERE id=?";
+    let query = "UPDATE products SET supplier=?, productCode=?, brandName=?, productName=?, productUnit=?, quantity=?, cost=?, srp=? WHERE id=?";
     let { supplier, productCode, brand, productName, unit, quantity, cp, srp } = req.body;
     connection.query(query, [supplier, productCode, brand, productName, unit, quantity, cp, srp, req.params.id], (err, rows) => {
         if(!err){
@@ -114,7 +120,7 @@ app.post("/product/delete/:id", auth, (req,res) => {
     if(req.usertype != "Admin"){
         return res.redirect("/");
     }
-    const query = "DELETE FROM products WHERE id=?";
+    let query = "DELETE FROM products WHERE id=?";
     connection.query(query, [req.params.id], (err,rows) => {
         if(!err){
             return res.redirect("/product/?message=deleted");
@@ -127,7 +133,7 @@ app.get("/cashier", auth, (req, res) => {
     if (req.usertype != "Admin") {
         return res.redirect("/");
     }
-    const query = "SELECT * FROM users WHERE usertype=?";
+    let query = "SELECT * FROM users WHERE usertype=?";
     connection.query(query, ["Cashier"], (err, rows) => {
         if (!err) {
             res.render("addCashier", { usertype: "Admin", message: req.query.message, datas: rows });
@@ -191,17 +197,66 @@ app.post("/cashier/delete/:id", auth, (req, res) => {
 })
 
 app.get("/cashpayment", auth, (req, res) => {
-    if (req.usertype == "Cashier") {
-        return res.render("cashPayment", { usertype: "Cashier" });
+    if (req.usertype != "Cashier") {
+        return res.redirect("/");
     }
-    res.redirect("/");
+    let query = "SELECT * FROM products WHERE quantity > 0 ORDER BY dateExp";
+    connection.query(query, (err,rows) => {
+        if(!err){
+            query = `SELECT * FROM products WHERE productCode='${req.query.code}'`;
+            connection.query(query, (err,datas) => {
+                if(!err){
+                    if(req.query.quantity !== undefined && req.query.dis !== undefined && req.query.vat !== undefined){
+                        customerItems.push(
+                            {
+                                ...datas[0],
+                                quantity: req.query.quantity,
+                                discount: req.query.dis,
+                                vat: req.query.vat,
+                                no: count
+                            }
+                        )
+                        count++
+                    }
+                    return res.render("cashPayment", { usertype: "Cashier", items: rows, table: customerItems });
+                }
+                console.log(err);
+            })
+            return;
+        }
+        console.log(err);
+    })
 });
 
-app.get("/creditpayment", auth, (req, res) => {
-    if (req.usertype == "Cashier") {
-        return res.render("creditPayment", { usertype: "Cashier" });
+app.post("/cashpayment", auth, (req,res) => {
+    if(req.usertype != "Cashier"){
+        return res.redirect("/");
     }
-    res.redirect("/");
+    let {quantity, selectProductCode, discount, vat} = req.body;
+    query = `UPDATE products SET quantity=quantity-${quantity} WHERE productCode='${selectProductCode}'`;
+    connection.query(query, (err, rows) => {
+        if(!err){
+            return res.redirect(`/cashpayment/?code=${selectProductCode}&quantity=${quantity}&dis=${discount}&vat=${vat}`);
+        }
+        console.log(err);
+    })
+});
+
+app.post("/item/delete/:productcode/:itemno/:quantity", auth, (req,res) => {
+    if(req.usertype != "Cashier"){
+        return res.redirect("/");
+    }
+    let query = `UPDATE products SET quantity=quantity+${req.params.quantity} WHERE productCode='${req.params.productcode}'`;
+    connection.query(query, (err, rows) => {
+        if(!err){
+            customerItems = customerItems.filter(data => {
+                return data.no != req.params.itemno;
+            });
+            count--;
+            return res.redirect("/cashpayment");
+        }
+        console.log(err);
+    })
 });
 
 app.get("/logout", (req, res) => {
