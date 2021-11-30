@@ -18,11 +18,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 let customerItems = [];
-var count;
+let count=0;
 
 app.get("/", auth, (req, res) => {
-    customerItems = [];
-    count = 1;
+    //customerItems = [];
     if (req.usertype == "Admin") {
         return res.render("home", { usertype: "Admin" });
     }
@@ -199,6 +198,9 @@ app.post("/cashier/delete/:id", auth, (req, res) => {
 app.get("/cashpayment", auth, (req, res) => {
     if (req.usertype != "Cashier") {
         return res.redirect("/");
+    }
+    if(count==0){
+        count = 1;
     }
     let query = "SELECT * FROM products WHERE quantity > 0 ORDER BY dateExp";
     connection.query(query, (err,rows) => {

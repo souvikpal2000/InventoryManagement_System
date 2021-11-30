@@ -68,11 +68,7 @@
                                 <td><%= cost %></td>
                                 <td><%= discount %></td>
                                 <td><%= vat %></td>
-                                <% if(discount==0){ %>
-                                    <td class="amount"><%= cost + (cost*(vat/100)) %></td>
-                                <% }else{ %>
-                                    <td class="amount"><%= cost - ((cost + (cost*(vat/100))) * (discount/100)) %></td>
-                                <% } %>
+                                <td><%= (cost + (cost*(vat/100)) - ((cost + (cost*(vat/100))) * (discount/100))) %></td>
                                 <td>
                                     <div class="actions">
                                         <form action="/item/delete/<%= productCode %>/<%= no %>/<%= quantity %>" method="POST">
