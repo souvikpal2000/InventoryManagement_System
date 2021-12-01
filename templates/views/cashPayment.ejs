@@ -36,7 +36,17 @@
                         <input type="number" class="form-control" name="vat" value="0">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Add Product</button>
+                <div class="buttonWithMessage">
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                    <% if(message=="fail"){ %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>No Items</strong> Added!!
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <% } %>
+                </div>   
             </form>
             <table class="table mt-4 table-bordered">
                 <thead class="thead-dark">
@@ -92,7 +102,42 @@
                     </tr>
                 </tbody>
             </table>
-            <button class="btn btn-primary">Check Out</button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#checkOut">Check Out</button>
+            <div class="modal fade" id="checkOut" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalCenterTitle">Check Out</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="/pay" method="POST">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <input type="text" class="form-control" placeholder="Enter Name" name="customerName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <textarea type="text" class="form-control" name="customerAddress" rows="4"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone No.</label>
+                                    <input type="number" class="form-control" name="phone" placeholder="Enter Phone No.">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cash</label>
+                                    <input type="number" class="form-control" name="cashPaid" placeholder="Enter Cash" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-primary">Pay</button>
+                            </div>
+                        </form>  
+                    </div>
+                </div>
+              </div>
         </div>
     </div>
 </body>

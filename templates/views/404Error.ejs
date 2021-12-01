@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/headerLinks') %>
+    <title>404 Error</title>
+</head>
+<body>
+    <div class="fullDisplay">
+        <div class="error">
+            <div class="errimg">
+                <img src="/images/404.jpg" alt="" class="img-fluid error">
+            </div>
+            <h1><%= errMessage %></h1>
+            <a href="/"><button class="btn btn-danger">Go Back</button></a>
+        </div>
+    </div>    
+</body>
+<%- include('../partials/footerLinks') %>
+</html>

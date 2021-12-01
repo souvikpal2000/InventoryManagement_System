@@ -220,7 +220,7 @@ app.get("/cashpayment", auth, (req, res) => {
                         )
                         count++
                     }
-                    return res.render("cashPayment", { usertype: "Cashier", items: rows, table: customerItems });
+                    return res.render("cashPayment", { usertype: "Cashier", items: rows, table: customerItems, message: req.query.message });
                 }
                 console.log(err);
             })
@@ -261,6 +261,42 @@ app.post("/item/delete/:productcode/:itemno/:quantity", auth, (req,res) => {
     })
 });
 
+app.post("/pay", auth, (req,res) => {
+    if(req.usertype != "Cashier"){
+        return res.redirect("/");
+    }
+    if(!customerItems.length){
+        return res.redirect("/cashpayment/?message=fail");
+    }
+    let totalSum = 0
+    customerItems.forEach(data => {
+        let {quantity, srp, discount, vat} = data;
+        let cost = quantity * srp;
+        totalSum = totalSum + (cost - ((cost + (cost*(vat/100))) * (discount/100)));
+    })
+    let {customerName, customerAddress, phone, cashPaid} = req.body;
+    let query = "INSERT INTO sales (cashierName, customerName, address, phoneNo, totalAmount, cashPaid, cashReturn) VALUES ?";
+    let values = [[req.username, customerName, customerAddress, phone, totalSum, cashPaid, (cashPaid - totalSum)]];
+    connection.query(query, [values], (err, rows) => {
+        if(err){
+            return console.log(err);
+        }
+        const id = rows.insertId;
+        query = "INSERT INTO sales_order (productCode, brandName, productName, quantity, price, discount, vat, invoiceId) VALUES ?";
+        customerItems.forEach(data => {
+            let {productCode, brandName, productName, quantity, srp, discount, vat} = data;
+            values = [[productCode, brandName, productName, quantity, srp, discount, vat, id]];
+            connection.query(query, [values], (err, rows) => {
+                if(err){
+                    console.log(err);
+                }
+            })  
+        });
+        customerItems = [];
+        res.redirect("/cashpayment");   
+    })
+});
+
 app.get("/logout", (req, res) => {
     res.clearCookie("jwt");
     res.redirect("/");
@@ -271,14 +307,28 @@ app.get("/logout", (req, res) => {
 app.get("/createtables", (req, res) => {
     //Create Table users
     let query = "CREATE TABLE IF NOT EXISTS `users` ( `id` INT NOT NULL AUTO_INCREMENT , `fullname` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `phone` VARCHAR(255) NOT NULL , `address` VARCHAR(255) NOT NULL , `username` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , `usertype` VARCHAR(20) NOT NULL , PRIMARY KEY (`id`))"
-    connection.query(query, async (err, row) => {
+    connection.query(query, (err, row) => {
         if (!err) {
-            const hashedPassword = await bcrypt.hash("admin123", 10);
-            let query = "INSERT INTO users (fullname, email, phone, address, username, password, usertype) VALUES ?";
-            let values = [["Creator", "creator@gmail.com", "123456789", "creatorAddress", "admin", hashedPassword, "Admin"]];
-            connection.query(query, [values], (err, result) => {
-                if (err) {
-                    console.log("Username already Existed");
+            query = `SELECT * FROM users WHERE username='admin'`;
+            connection.query(query, async (err, rows) => {
+                if(!err && rows.length > 0){
+                    console.log("Admin Details Already Existed!!");
+                }
+                else if(!err && rows.length == 0){
+                    const hashedPassword = await bcrypt.hash("admin123", 10);
+                    query = "INSERT INTO users (fullname, email, phone, address, username, password, usertype) VALUES ?";
+                    let values = [["Creator", "creator@gmail.com", "123456789", "creatorAddress", "admin", hashedPassword, "Admin"]];
+                    connection.query(query, [values], (err, result) => {
+                        if (!err) {
+                            console.log("Admin Details Added!!");
+                            return;
+                        }
+                        console.log(err);
+                    })
+                    return;
+                }
+                else if(err){
+                    console.log(err);
                 }
             })
         }
@@ -295,12 +345,29 @@ app.get("/createtables", (req, res) => {
         }
     })
 
+    //Create Table Sales
+    query = "CREATE TABLE IF NOT EXISTS `sales` ( `invoiceId` INT NOT NULL AUTO_INCREMENT , `cashierName` VARCHAR(255) NOT NULL , `customerName` VARCHAR(255) NOT NULL , `address` VARCHAR(255) , `phoneNo` VARCHAR(255) , `totalAmount` INT NOT NULL , `cashPaid` INT NOT NULL , `cashReturn` INT NOT NULL , PRIMARY KEY (`invoiceId`))"
+    connection.query(query, (err, rows) => {
+        if(err){
+            console.log(err);
+        }
+    });
+
+    //Create Table Sales_Order
+    query = "CREATE TABLE IF NOT EXISTS `sales_order` ( `id` INT NOT NULL AUTO_INCREMENT , `productCode` VARCHAR(255) NOT NULL , `brandName` VARCHAR(255) NOT NULL , `productName` VARCHAR(255) NOT NULL , `quantity` INT NOT NULL , `price` INT NOT NULL , `discount` INT NOT NULL , `vat` INT NOT NULL , `invoiceId` INT , PRIMARY KEY (`id`) , FOREIGN KEY (`invoiceId`) REFERENCES sales(`invoiceId`)) ";
+    connection.query(query, (err, rows) => {
+        if(err){
+            console.log(err);
+        }
+    })
+
+
     //Create Table Orders
     res.send("Tables Created");
 })
 
 app.get("*", (req, res) => {
-    res.send("404 ERROR");
+    res.render("404Error", { errMessage: 'Oops! Page not Found'});
 });
 
 const port = process.env.PORT || 3000;

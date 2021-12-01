@@ -162,6 +162,24 @@ textarea {
 #table_id_filter input[type=search]:focus{
     border: none !important;
 }
+.fullDisplay{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.errimg img{
+    width: 40rem;
+}
+.error{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.error h1{
+    margin-bottom: 1rem;
+}
 @media (max-width: 768px) {
     #sidebar {
         margin-left: -250px;
@@ -180,6 +198,12 @@ textarea {
     }
     .loginImg{
         width: 400px !important;
+    }
+    .error{
+        text-align: center;
+    }
+    .error h1{
+        font-size: 2rem;
     }
 }
 @media (max-width: 989px) {
