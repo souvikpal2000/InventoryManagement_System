@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/headerLinks') %>
+    <title>Print</title>
+</head>
+<body>
+    <div class="allButtons">
+        <button class="btn btn-success">Print</button>
+        <a href="/cashpayment"><button class="btn btn-primary">Go Back</button></a>
+    </div>
+    <div>
+        <h2><%= data.fullname %></h2>
+        <p>Shreet Address : <%= data.address %></p>
+        <p>Contact No. : <%= data.phone %></p>
+        <p>Email Address : <%= data.email %></p>
+    </div>
+    <div>
+        <p>Received By : <%= invoiceData.customerName %></p>
+        <p>Address : <%= invoiceData.address %></p>
+        <p>Contact No. : <%= invoiceData.phoneNo %></p>
+    </div>
+    <div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product Code</th>
+                    <th>Brand Name</th>
+                    <th>Product Name</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>VAT</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                    <% let {productCode, brandName, productName, quantity, price, discount, vat} = product %>
+                    <% let cost = quantity * price %>
+                    <tr>
+                        <td><%= productCode %></td>
+                        <td><%= brandName %></td>
+                        <td><%= productName %></td>
+                        <td><%= quantity %></td>
+                        <td><%= cost %></td>
+                        <td><%= discount %></td>
+                        <td><%= vat %></td>
+                        <td><%= (cost + (cost*(vat/100)) - ((cost + (cost*(vat/100))) * (discount/100))) %></td>
+                    </tr>
+                <% }) %>
+                <tr>
+                    <th colspan="7">Total Amount</th>
+                    <td><%= invoiceData.totalAmount %></td>
+                </tr>
+                <tr>
+                    <th colspan="7">Change</th>
+                    <td><%= invoiceData.cashReturn %></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <p>Cashier : <%= cashier %></p>
+    </div>
+</body>
+<%- include('../partials/footerLinks') %>
+</html>

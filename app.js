@@ -293,9 +293,83 @@ app.post("/pay", auth, (req,res) => {
             })  
         });
         customerItems = [];
-        res.redirect("/cashpayment");   
+        res.redirect(`/print/?invoice=${id}`);   
     })
 });
+
+app.get("/print", auth, (req,res) => {
+    if(req.usertype != "Cashier"){
+        return res.redirect("/");
+    }
+    let query;
+    const adminDetails = new Promise((resolve, reject) => {
+        query = "SELECT * FROM users WHERE usertype='admin'";
+        connection.query(query, (err, rows) => {
+            if(err){
+                reject(err);
+            }else{
+                resolve(rows)
+            }
+        })
+    })
+    const invoiceDetails = (invoiceId) => {
+        return new Promise((resolve, reject) => {
+            query = "SELECT * FROM sales WHERE invoiceId=?";
+            connection.query(query, [invoiceId], (err, rows) => {
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(rows);
+                }
+            })
+        })
+    }
+    const userDetails = (invoiceData) => {
+        return new Promise((resolve, reject) => {
+            query = "SELECT * FROM users WHERE username=?";
+            connection.query(query, [invoiceData[0].cashierName], (err, rows) => {
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(rows);
+                }
+            })
+        })
+    }
+    const productDetails = (invoiceId) => {
+        return new Promise((resolve, reject) => {
+            query = "SELECT * FROM sales_order WHERE invoiceId=?";
+            connection.query(query, [invoiceId], (err, rows) => {
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(rows);
+                }
+            })
+        })
+    }
+
+    const mainFunc = async () => {
+        try{
+            const admin = await adminDetails;
+            const invoice = await invoiceDetails(req.query.invoice);
+            const cashierDetails = await userDetails(invoice);
+            const product = await productDetails(req.query.invoice);
+    
+            res.render("print", {
+                data: admin[0], 
+                invoiceData: invoice[0], 
+                cashier: cashierDetails[0].fullname,
+                products: product
+            });
+        }
+        catch(err){
+            console.log(err);
+        }
+
+    }
+    mainFunc();
+})
 
 app.get("/logout", (req, res) => {
     res.clearCookie("jwt");
