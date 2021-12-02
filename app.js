@@ -196,6 +196,7 @@ app.post("/cashier/delete/:id", auth, (req, res) => {
 })
 
 app.get("/cashpayment", auth, (req, res) => {
+    res.clearCookie("invoiceId");
     if (req.usertype != "Cashier") {
         return res.redirect("/");
     }
@@ -293,12 +294,13 @@ app.post("/pay", auth, (req,res) => {
             })  
         });
         customerItems = [];
-        res.redirect(`/print/?invoice=${id}`);   
+        res.cookie("invoiceId", id);
+        res.redirect("/print");   
     })
 });
 
 app.get("/print", auth, (req,res) => {
-    if(req.usertype != "Cashier"){
+    if(req.usertype != "Cashier" || !req.cookies.invoiceId){
         return res.redirect("/");
     }
     let query;
@@ -352,9 +354,9 @@ app.get("/print", auth, (req,res) => {
     const mainFunc = async () => {
         try{
             const admin = await adminDetails;
-            const invoice = await invoiceDetails(req.query.invoice);
+            const invoice = await invoiceDetails(req.cookies.invoiceId);
             const cashierDetails = await userDetails(invoice);
-            const product = await productDetails(req.query.invoice);
+            const product = await productDetails(req.cookies.invoiceId);
     
             res.render("print", {
                 data: admin[0], 
@@ -366,7 +368,6 @@ app.get("/print", auth, (req,res) => {
         catch(err){
             console.log(err);
         }
-
     }
     mainFunc();
 })

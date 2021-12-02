@@ -180,6 +180,24 @@ textarea {
 .error h1{
     margin-bottom: 1rem;
 }
+.allButtons{
+    margin: 1rem 0rem 1rem 0rem;
+    text-align: center;
+}
+.shopDetails .shopName{
+    text-transform: uppercase;
+}
+.shopDetails p, .customerDetails p{
+    margin: 0;
+    color: black;
+}
+.customerDetails{
+    margin: 1rem 0rem 1rem 0rem;
+}
+.cashierDetails p{
+    color: black;
+    text-align: right;
+}
 @media (max-width: 768px) {
     #sidebar {
         margin-left: -250px;
@@ -218,5 +236,13 @@ textarea {
     }
     .loginForm{
         padding-left: 15px;
+    }
+}
+@media print{
+    body{
+        visibility: hidden;
+    }
+    .print{
+        visibility: visible;
     }
 }
