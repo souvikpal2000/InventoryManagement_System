@@ -276,8 +276,10 @@ app.post("/pay", auth, (req,res) => {
         totalSum = totalSum + (cost - ((cost + (cost*(vat/100))) * (discount/100)));
     })
     let {customerName, customerAddress, phone, cashPaid} = req.body;
-    let query = "INSERT INTO sales (cashierName, customerName, address, phoneNo, totalAmount, cashPaid, cashReturn) VALUES ?";
-    let values = [[req.username, customerName, customerAddress, phone, totalSum, cashPaid, (cashPaid - totalSum)]];
+    let query = "INSERT INTO sales (cashierName, customerName, address, phoneNo, totalAmount, cashPaid, cashReturn, date) VALUES ?";
+    let today = new Date();
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    let values = [[req.username, customerName, customerAddress, phone, totalSum, cashPaid, (cashPaid - totalSum), date]];
     connection.query(query, [values], (err, rows) => {
         if(err){
             return console.log(err);
@@ -381,7 +383,18 @@ app.get("/logout", (req, res) => {
 /* After Creation of Database Restart the Server */
 app.get("/createtables", (req, res) => {
     //Create Table users
-    let query = "CREATE TABLE IF NOT EXISTS `users` ( `id` INT NOT NULL AUTO_INCREMENT , `fullname` VARCHAR(255) NOT NULL , `email` VARCHAR(255) NOT NULL , `phone` VARCHAR(255) NOT NULL , `address` VARCHAR(255) NOT NULL , `username` VARCHAR(255) NOT NULL , `password` VARCHAR(255) NOT NULL , `usertype` VARCHAR(20) NOT NULL , PRIMARY KEY (`id`))"
+    let query = `CREATE TABLE IF NOT EXISTS users ( 
+        id INT NOT NULL AUTO_INCREMENT , 
+        fullname VARCHAR(255) NOT NULL , 
+        email VARCHAR(255) NOT NULL ,
+        phone VARCHAR(255) NOT NULL , 
+        address VARCHAR(255) NOT NULL , 
+        username VARCHAR(255) NOT NULL , 
+        password VARCHAR(255) NOT NULL , 
+        usertype VARCHAR(20) NOT NULL , 
+        PRIMARY KEY (id),
+        UNIQUE (username)
+    )`
     connection.query(query, (err, row) => {
         if (!err) {
             query = `SELECT * FROM users WHERE username='admin'`;
@@ -392,7 +405,7 @@ app.get("/createtables", (req, res) => {
                 else if(!err && rows.length == 0){
                     const hashedPassword = await bcrypt.hash("admin123", 10);
                     query = "INSERT INTO users (fullname, email, phone, address, username, password, usertype) VALUES ?";
-                    let values = [["Creator", "creator@gmail.com", "123456789", "creatorAddress", "admin", hashedPassword, "Admin"]];
+                    let values = [["Cartmax", "cartmax@gmail.com", "123456789", "185, Madhusudan Banerjee Rd · 033 3018 2624", "admin", hashedPassword, "Admin"]];
                     connection.query(query, [values], (err, result) => {
                         if (!err) {
                             console.log("Admin Details Added!!");
@@ -413,7 +426,20 @@ app.get("/createtables", (req, res) => {
     })
 
     //Create Table Product
-    query = "CREATE TABLE IF NOT EXISTS `products` ( `id` BIGINT NOT NULL AUTO_INCREMENT , `supplier` VARCHAR(255), `productCode` VARCHAR(255) NOT NULL , `brandName` VARCHAR(255) NOT NULL , `productName` VARCHAR(255) NOT NULL , `productUnit` VARCHAR(20) NOT NULL , `quantity` INT NOT NULL , `cost` INT NOT NULL , `srp` INT , `dateDeli` DATE , `dateExp` DATE NOT NULL , PRIMARY KEY (`id`))"
+    query = `CREATE TABLE IF NOT EXISTS products ( 
+        id BIGINT NOT NULL AUTO_INCREMENT , 
+        supplier VARCHAR(255), 
+        productCode VARCHAR(255) NOT NULL , 
+        brandName VARCHAR(255) NOT NULL , 
+        productName VARCHAR(255) NOT NULL , 
+        productUnit VARCHAR(20) NOT NULL , 
+        quantity INT NOT NULL , 
+        cost INT NOT NULL , 
+        srp INT NOT NULL , 
+        dateDeli DATE NOT NULL , 
+        dateExp DATE NOT NULL , 
+        PRIMARY KEY (id)
+    )`
     connection.query(query, (err, row) => {
         if (err) {
             console.log(err);
@@ -421,7 +447,19 @@ app.get("/createtables", (req, res) => {
     })
 
     //Create Table Sales
-    query = "CREATE TABLE IF NOT EXISTS `sales` ( `invoiceId` INT NOT NULL AUTO_INCREMENT , `cashierName` VARCHAR(255) NOT NULL , `customerName` VARCHAR(255) NOT NULL , `address` VARCHAR(255) , `phoneNo` VARCHAR(255) , `totalAmount` INT NOT NULL , `cashPaid` INT NOT NULL , `cashReturn` INT NOT NULL , PRIMARY KEY (`invoiceId`))"
+    query = `CREATE TABLE IF NOT EXISTS sales ( 
+        invoiceId INT NOT NULL AUTO_INCREMENT , 
+        cashierName VARCHAR(255) NOT NULL , 
+        customerName VARCHAR(255) NOT NULL , 
+        address VARCHAR(255) , 
+        phoneNo VARCHAR(255) , 
+        totalAmount INT NOT NULL , 
+        cashPaid INT NOT NULL , 
+        cashReturn INT NOT NULL , 
+        date DATE NOT NULL ,
+        PRIMARY KEY (invoiceId) , 
+        FOREIGN KEY (cashierName) REFERENCES users(username)
+    )`
     connection.query(query, (err, rows) => {
         if(err){
             console.log(err);
@@ -429,13 +467,24 @@ app.get("/createtables", (req, res) => {
     });
 
     //Create Table Sales_Order
-    query = "CREATE TABLE IF NOT EXISTS `sales_order` ( `id` INT NOT NULL AUTO_INCREMENT , `productCode` VARCHAR(255) NOT NULL , `brandName` VARCHAR(255) NOT NULL , `productName` VARCHAR(255) NOT NULL , `quantity` INT NOT NULL , `price` INT NOT NULL , `discount` INT NOT NULL , `vat` INT NOT NULL , `invoiceId` INT , PRIMARY KEY (`id`) , FOREIGN KEY (`invoiceId`) REFERENCES sales(`invoiceId`)) ";
+    query = `CREATE TABLE IF NOT EXISTS sales_order ( 
+        id INT NOT NULL AUTO_INCREMENT , 
+        productCode VARCHAR(255) NOT NULL , 
+        brandName VARCHAR(255) NOT NULL , 
+        productName VARCHAR(255) NOT NULL , 
+        quantity INT NOT NULL , 
+        price INT NOT NULL , 
+        discount INT NOT NULL , 
+        vat INT NOT NULL , 
+        invoiceId INT , 
+        PRIMARY KEY (id) , 
+        FOREIGN KEY (invoiceId) REFERENCES sales(invoiceId) ON DELETE CASCADE
+    )`;
     connection.query(query, (err, rows) => {
         if(err){
             console.log(err);
         }
-    })
-
+    });
 
     //Create Table Orders
     res.send("Tables Created");

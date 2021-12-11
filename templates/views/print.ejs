@@ -12,7 +12,9 @@
         </div>
         <div class="print">
             <div class="showDate">
-                <p class="date"></p>
+                <% let {date} = invoiceData %>
+                <% let month = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %>
+                <p class="date"><%= new Date(date).getDate() + "-" + month[new Date(date).getMonth()] + "-" + new Date(date).getFullYear() %></p>
             </div>
             <div class="shopDetails">
                 <h3 class="shopName"><%= data.fullname %></h3>
@@ -72,9 +74,4 @@
     </div>
 </body>
 <%- include('../partials/footerLinks') %>
-<script>
-    let month = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    const d = new Date();
-    document.querySelector(".date").innerHTML = d.getDate() + "-" + month[d.getMonth()] + "-" + d.getFullYear();
-</script>
 </html>
