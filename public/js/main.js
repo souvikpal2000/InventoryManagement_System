@@ -50,8 +50,4 @@ function fillData2(id) {
 
 new TomSelect("#select-state",{
     create: false,
-    sortField: {
-        field: "text",
-        direction: "asc"
-    }
 });

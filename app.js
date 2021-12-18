@@ -23,7 +23,14 @@ let count=0;
 app.get("/", auth, (req, res) => {
     //customerItems = [];
     if (req.usertype == "Admin") {
-        return res.render("home", { usertype: "Admin" });
+        let query = "SELECT * FROM products WHERE quantity > 0 AND DATE_SUB(dateExp, INTERVAL 1 MONTH) < CURDATE() AND dateExp > CURDATE() ORDER BY dateExp";
+        connection.query(query, (err, rows) => {
+            if(!err){
+                return res.render("home", { usertype: "Admin", items: rows});
+            }
+            console.log(err);
+        })
+        return;
     }
     else if (req.usertype == "Cashier") {
         return res.redirect("/cashpayment");
@@ -105,14 +112,21 @@ app.post("/product/edit/:id", auth, (req,res) => {
     if(req.usertype != "Admin"){
         return res.redirect("/");
     }
-    let query = "UPDATE products SET supplier=?, productCode=?, brandName=?, productName=?, productUnit=?, quantity=?, cost=?, srp=? WHERE id=?";
-    let { supplier, productCode, brand, productName, unit, quantity, cp, srp } = req.body;
-    connection.query(query, [supplier, productCode, brand, productName, unit, quantity, cp, srp, req.params.id], (err, rows) => {
-        if(!err){
-            return res.redirect('/product/?message=edited');
+    let query = "SELECT * FROM products WHERE id!=? AND productCode=?"
+    connection.query(query, [req.params.id, req.body.productCode], (err, rows) => {
+        if(!err && rows.length > 0){
+            return res.redirect('/product/?message=fail');
         }
-        console.log(err);
+        query = "UPDATE products SET supplier=?, productCode=?, brandName=?, productName=?, productUnit=?, quantity=?, cost=?, srp=? WHERE id=?";
+        let { supplier, productCode, brand, productName, unit, quantity, cp, srp } = req.body;
+        connection.query(query, [supplier, productCode, brand, productName, unit, quantity, cp, srp, req.params.id], (err, rows) => {
+            if(!err){
+                return res.redirect('/product/?message=edited');
+            }
+            console.log(err);
+        })
     })
+
 });
 
 app.post("/product/delete/:id", auth, (req,res) => {
@@ -172,14 +186,20 @@ app.post("/cashier/edit/:id", auth, (req, res) => {
     if (req.usertype != "Admin") {
         return res.redirect("/");
     }
-    let query = "UPDATE users SET fullname=?, email=?, phone=?, address=?, username=?, password=? WHERE id=?";
-    let { fullname, email, phone, address, username, password } = req.body;
-    connection.query(query, [fullname, email, phone, address, username, password, req.params.id], (err, rows) => {
-        if (!err) {
-            return res.redirect("/cashier/?message=edited");
+    let query = "SELECT * FROM users WHERE id!=? AND username=?";
+    connection.query(query, [req.params.id, req.body.username], (err, rows) => {
+        if(!err && rows.length > 0){
+            return res.redirect("/cashier/?message=fail");
         }
-        console.log(err);
-    });
+        query = "UPDATE users SET fullname=?, email=?, phone=?, address=?, username=?, password=? WHERE id=?";
+        let { fullname, email, phone, address, username, password } = req.body;
+        connection.query(query, [fullname, email, phone, address, username, password, req.params.id], (err, rows) => {
+            if (!err) {
+                return res.redirect("/cashier/?message=edited");
+            }
+            console.log(err);
+        });
+    })
 });
 
 app.post("/cashier/delete/:id", auth, (req, res) => {
@@ -203,7 +223,7 @@ app.get("/cashpayment", auth, (req, res) => {
     if(count==0){
         count = 1;
     }
-    let query = "SELECT * FROM products WHERE quantity > 0 ORDER BY dateExp";
+    let query = "SELECT * FROM products WHERE quantity > 0 AND dateExp > CURDATE() ORDER BY dateExp";
     connection.query(query, (err,rows) => {
         if(!err){
             query = `SELECT * FROM products WHERE productCode='${req.query.code}'`;
@@ -449,7 +469,7 @@ app.get("/createtables", (req, res) => {
     //Create Table Sales
     query = `CREATE TABLE IF NOT EXISTS sales ( 
         invoiceId INT NOT NULL AUTO_INCREMENT , 
-        cashierName VARCHAR(255) NOT NULL , 
+        cashierName VARCHAR(255) , 
         customerName VARCHAR(255) NOT NULL , 
         address VARCHAR(255) , 
         phoneNo VARCHAR(255) , 
@@ -458,7 +478,7 @@ app.get("/createtables", (req, res) => {
         cashReturn INT NOT NULL , 
         date DATE NOT NULL ,
         PRIMARY KEY (invoiceId) , 
-        FOREIGN KEY (cashierName) REFERENCES users(username)
+        FOREIGN KEY (cashierName) REFERENCES users(username) ON DELETE SET NULL ON UPDATE CASCADE
     )`
     connection.query(query, (err, rows) => {
         if(err){
