@@ -397,6 +397,12 @@ app.get("/print", auth, (req,res) => {
         }
         catch(err){
             console.log(err);
+            if(req.usertype == "Admin"){
+                res.redirect("/salesreport");
+            }
+            else if(req.usertype == "Cashier"){
+                res.redirect("/cashpayment");
+            }
         }
     }
     mainFunc();
@@ -411,6 +417,19 @@ app.get("/salesreport", auth, (req,res) => {
         if(!err){
             return res.render("salesReport", {usertype: "Admin", sales: rows}); 
         }
+    })
+})
+
+app.post("/salesreport/delete/:id", auth, (req,res) => {
+    if(req.usertype != "Admin"){
+        return res.redirect("/");
+    }
+    let query = "DELETE FROM sales WHERE invoiceId=?";
+    connection.query(query, [req.params.id], (err, rows) => {
+        if(!err){
+            return res.redirect("/salesreport");
+        }
+        console.log(err);
     })
 })
 
