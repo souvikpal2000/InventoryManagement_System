@@ -216,7 +216,6 @@ app.post("/cashier/delete/:id", auth, (req, res) => {
 })
 
 app.get("/cashpayment", auth, (req, res) => {
-    res.clearCookie("invoiceId");
     if (req.usertype != "Cashier") {
         return res.redirect("/");
     }
@@ -316,13 +315,12 @@ app.post("/pay", auth, (req,res) => {
             })  
         });
         customerItems = [];
-        res.cookie("invoiceId", id);
-        res.redirect("/print");   
+        res.redirect(`/print/?invoice=${id}`);   
     })
 });
 
 app.get("/print", auth, (req,res) => {
-    if(req.usertype != "Cashier" || !req.cookies.invoiceId){
+    if(req.usertype == null || !req.query.invoice){
         return res.redirect("/");
     }
     let query;
@@ -376,15 +374,25 @@ app.get("/print", auth, (req,res) => {
     const mainFunc = async () => {
         try{
             const admin = await adminDetails;
-            const invoice = await invoiceDetails(req.cookies.invoiceId);
+            const invoice = await invoiceDetails(req.query.invoice);
             const cashierDetails = await userDetails(invoice);
-            const product = await productDetails(req.cookies.invoiceId);
-    
+            const product = await productDetails(req.query.invoice);
+            
+            if(cashierDetails[0] == undefined){
+                return res.render("print", {
+                    data: admin[0], 
+                    invoiceData: invoice[0], 
+                    cashier: "Unknown",
+                    products: product,
+                    usertype: req.usertype
+                });
+            }
             res.render("print", {
                 data: admin[0], 
                 invoiceData: invoice[0], 
                 cashier: cashierDetails[0].fullname,
-                products: product
+                products: product,
+                usertype: req.usertype
             });
         }
         catch(err){
@@ -392,6 +400,18 @@ app.get("/print", auth, (req,res) => {
         }
     }
     mainFunc();
+})
+
+app.get("/salesreport", auth, (req,res) => {
+    if(req.usertype != "Admin"){
+        return res.redirect("/");
+    }
+    let query = "SELECT * FROM sales ORDER BY date DESC"
+    connection.query(query, (err, rows) => {
+        if(!err){
+            return res.render("salesReport", {usertype: "Admin", sales: rows}); 
+        }
+    })
 })
 
 app.get("/logout", (req, res) => {

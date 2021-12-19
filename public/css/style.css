@@ -144,11 +144,11 @@ textarea {
 .actions{
     display: flex;
 }
-.fa-user-edit, .fa-trash-alt, .fa-edit{
+.fa-user-edit, .fa-trash-alt, .fa-edit, .fa-print{
     margin: 0.5rem;
     cursor: pointer;
 }
-.fa-user-edit, .fa-edit{
+.fa-user-edit, .fa-edit, .fa-print{
     color: rgb(71, 201, 71)
 }
 .fa-trash-alt{
@@ -197,6 +197,11 @@ textarea {
 .cashierDetails p{
     color: black;
     text-align: right;
+}
+.totalEarned{
+    color: black;
+    font-weight: bold;
+    margin-top: 1rem
 }
 @media (max-width: 768px) {
     #sidebar {
