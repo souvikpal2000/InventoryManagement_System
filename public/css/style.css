@@ -198,7 +198,7 @@ textarea {
     color: black;
     text-align: right;
 }
-.totalEarned{
+.totalEarned, .totalLoss{
     color: black;
     font-weight: bold;
     margin-top: 1rem

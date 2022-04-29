@@ -142,6 +142,19 @@ app.post("/product/delete/:id", auth, (req,res) => {
     })
 });
 
+app.get("/expired", auth, (req,res) => {
+    if(req.usertype != "Admin"){
+        return res.redirect("/");
+    }
+    let query = "SELECT * FROM products WHERE dateExp < CURDATE() ORDER BY dateExp";
+    connection.query(query, (err, rows) => {
+        if(!err){
+            return res.render("expiredProduct", { usertype: "Admin", items: rows });
+        }
+        console.log(err);
+    })  
+})
+
 app.get("/cashier", auth, (req, res) => {
     if (req.usertype != "Admin") {
         return res.redirect("/");

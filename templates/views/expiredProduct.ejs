@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/headerLinks') %>
+    <title>Home</title>
+</head>
+<body>
+    <div class="wrapper">
+        <%- include('../partials/sideNavbar') %>
+        <div id="content">
+            <%- include('../partials/navbar') %>
+            <h2 class="mb-4">Expired Product</h2>
+            <table id="table_id2" class="display table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>Product Code</th>
+                        <th>Brand Name</th>
+                        <th>Product Name</th>
+                        <th>Quantity Left</th>
+                        <th>Cost Price</th>
+                        <th>Date of Expiration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let count = 1 %>
+                    <% total=0 %>
+                    <% items.forEach(item => { %>
+                        <% let {productCode, brandName, productName, quantity, cost, dateExp} = item %>
+                        <% let month = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %>
+                        <% total = total + (quantity*cost) %>
+                        <tr>
+                            <td><%= count %></td>
+                            <td><%= productCode %></td>
+                            <td><%= brandName %></td>
+                            <td><%= productName %></td>
+                            <td><%= quantity %></td>
+                            <td><%= cost %></td>
+                            <td><%= month[new Date(dateExp).getMonth()] + " " + new Date(dateExp).getFullYear() %></td>
+                        </tr>
+                        <% count++ %>
+                    <% }) %>
+                </tbody>
+            </table>
+            <p class="totalLoss">Total Loss : <%= total %></p>
+        </div>
+    </div>
+</body>
+<%- include('../partials/footerLinks') %>
+</html>
