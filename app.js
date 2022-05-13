@@ -5,6 +5,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
+const { readSync } = require("fs");
 require('dotenv').config();
 const app = express();
 
@@ -21,21 +22,13 @@ let customerItems = [];
 let count=0;
 
 app.get("/", auth, (req, res) => {
-    //customerItems = [];
-    if (req.usertype == "Admin") {
-        let query = "SELECT * FROM products WHERE quantity > 0 AND DATE_SUB(dateExp, INTERVAL 1 MONTH) < CURDATE() AND dateExp > CURDATE() ORDER BY dateExp";
-        connection.query(query, (err, rows) => {
-            if(!err){
-                return res.render("home", { usertype: "Admin", items: rows});
-            }
-            console.log(err);
-        })
-        return;
+    if(req.usertype == "Admin"){
+        return res.render("home", { usertype: "Admin"})
     }
     else if (req.usertype == "Cashier") {
         return res.redirect("/cashpayment");
     }
-    res.render("login", { message: null });
+    return res.render("login", {message:null});
 });
 
 app.post("/", (req, res) => {
@@ -141,6 +134,24 @@ app.post("/product/delete/:id", auth, (req,res) => {
         console.log(err);
     })
 });
+
+app.get("/expiring", auth, (req,res) => {
+    //customerItems = [];
+    if (req.usertype == "Admin") {
+        let query = "SELECT * FROM products WHERE quantity > 0 AND DATE_SUB(dateExp, INTERVAL 1 MONTH) < CURDATE() AND dateExp > CURDATE() ORDER BY dateExp";
+        connection.query(query, (err, rows) => {
+            if(!err){
+                return res.render("expiring", { usertype: "Admin", items: rows});
+            }
+            console.log(err);
+        })
+        return;
+    }
+    // else if (req.usertype == "Cashier") {
+    //     return res.redirect("/cashpayment");
+    // }
+    res.render("login", { message: null });
+})
 
 app.get("/expired", auth, (req,res) => {
     if(req.usertype != "Admin"){

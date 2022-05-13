@@ -64,10 +64,13 @@
                             <th colspan="7">Total Amount</th>
                             <td><%= invoiceData.totalAmount %></td>
                         </tr>
-                        <tr>
-                            <th colspan="7">Change</th>
-                            <td><%= invoiceData.cashReturn %></td>
-                        </tr>
+                        <% if(usertype != "Admin") { %>
+                            <tr class="disabled">
+                                <th colspan="7">Change</th>
+                                <td><%= invoiceData.cashReturn %></td>
+                            </tr> 
+                        <% } %>
+
                     </tbody>
                 </table>
             </div>

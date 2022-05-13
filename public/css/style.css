@@ -203,6 +203,50 @@ textarea {
     font-weight: bold;
     margin-top: 1rem
 }
+.dashboard{
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 1rem;
+}
+.firstColumn div, .secondColumn div{
+    margin-top: 1rem;
+}
+.items, .cashier{
+    width: 95%;
+    height: 14rem;
+    border-radius: 1rem;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+.expiring, .expired, .totalSales, .loss{
+    width: 95%;
+    height: 7.5rem;
+    border-radius: 1rem;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+.cardsHeading{
+    padding: 1rem;
+}
+.firstColumn p, .firstColumn a, .secondColumn p, .secondColumn a{
+    margin-left: 1rem;
+}
+.totalSales p, .loss p, .expired p, .expiring p{
+    margin: 0;
+    margin-left: 1rem;
+}
+.totalSales a, .loss a, .expired a, .expiring a{
+    border-bottom-right-radius: 1rem;
+    margin-right: 1rem;
+}
+.items a, .cashier a{
+    margin-top: 0.5rem;
+    border-bottom-left-radius: 1rem;
+}
+.info{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
 @media (max-width: 768px) {
     #sidebar {
         margin-left: -250px;
@@ -249,5 +293,8 @@ textarea {
     }
     .print{
         visibility: visible;
+    }
+    .disabled{
+        visibility: hidden;
     }
 }

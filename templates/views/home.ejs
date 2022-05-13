@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <%- include('../partials/headerLinks') %>
     <title>Home</title>
@@ -9,37 +8,54 @@
         <%- include('../partials/sideNavbar') %>
         <div id="content">
             <%- include('../partials/navbar') %>
-            <h2 class="mb-4">Expiring Soon!!</h2>
-            <table id="table_id2" class="display table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Sl No.</th>
-                        <th>Product Code</th>
-                        <th>Brand Name</th>
-                        <th>Product Name</th>
-                        <th>Quantity Left</th>
-                        <th>Cost Price</th>
-                        <th>Date of Expiration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% let count = 1 %>
-                    <% items.forEach(item => { %>
-                        <% let {productCode, brandName, productName, quantity, cost, dateExp} = item %>
-                        <% let month = ['Jan','Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %>
-                        <tr>
-                            <td><%= count %></td>
-                            <td><%= productCode %></td>
-                            <td><%= brandName %></td>
-                            <td><%= productName %></td>
-                            <td><%= quantity %></td>
-                            <td><%= cost %></td>
-                            <td><%= month[new Date(dateExp).getMonth()] + " " + new Date(dateExp).getFullYear() %></td>
-                        </tr>
-                        <% count++ %>
-                    <% }) %>
-                </tbody>
-            </table>
+            <h2>Dashboard</h2>
+            <div class="container-fluid">
+                <div class="dashboard">
+                    <div class="firstColumn">
+                        <div class="items">
+                            <h4 class="cardsHeading">Items</h4>
+                            <p>Quantity     :   </p>
+                            <p>Total Cost   :   </p>
+                            <a type="button" class="btn btn-primary" href="/product">View Items</a>
+                        </div>
+                        <div class="totalSales">
+                            <h6 class="cardsHeading">Total Sales</h6>
+                            <div class="info">
+                                <p>Total Sales Amount     :   </p>
+                                <a type="button" class="btn btn-success" href="/salesreport">View</a>
+                            </div>
+                        </div>
+                        <div class="loss">
+                            <h6 class="cardsHeading">Loss Suffered</h6>
+                            <div class="info">
+                                <p>Total Loss     :   </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="secondColumn">
+                        <div class="expiring">
+                            <h6 class="cardsHeading">Expiring Soon</h6>
+                            <div class="info">
+                                <p>Quantity     :   </p>
+                                <a type="button" class="btn btn-warning" href="/expiring">View</a>
+                            </div>
+                        </div>
+                        <div class="expired">
+                            <h6 class="cardsHeading">Expired Products</h6>
+                            <div class="info">
+                                <p>Quantity     :   </p>
+                                <a type="button" class="btn btn-danger" href="/expired">View</a>
+                            </div>
+                        </div>
+                        <div class="cashier">
+                            <h4 class="cardsHeading">Cashiers</h4>
+                            <p>Total Cashiers   :   </p>
+                            <p>Top Performer Cashier    :   </p>
+                            <a type="button" class="btn btn-primary" href="/salesreport">View Cashier</a>
+                        </div>
+                    </div>
+                </div>
+            </div> 
         </div>
     </div>
 </body>
