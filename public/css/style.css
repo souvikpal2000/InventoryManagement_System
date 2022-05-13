@@ -212,13 +212,13 @@ textarea {
     margin-top: 1rem;
 }
 .items, .cashier{
-    width: 95%;
+    max-width: 95%;
     height: 14rem;
     border-radius: 1rem;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 .expiring, .expired, .totalSales, .loss{
-    width: 95%;
+    max-width: 95%;
     height: 7.5rem;
     border-radius: 1rem;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
@@ -246,6 +246,18 @@ textarea {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+}
+.dashboard p{
+    color: black;
+}
+.quantity{
+    margin-top: 0 !important;
+    display: flex;
+    flex-direction: row;
+}
+.no{
+    position: relative;
+    left: 8rem;
 }
 @media (max-width: 768px) {
     #sidebar {

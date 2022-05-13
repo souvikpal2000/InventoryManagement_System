@@ -5,7 +5,6 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const cookieParser = require('cookie-parser');
-const { readSync } = require("fs");
 require('dotenv').config();
 const app = express();
 
@@ -22,13 +21,132 @@ let customerItems = [];
 let count=0;
 
 app.get("/", auth, (req, res) => {
-    if(req.usertype == "Admin"){
-        return res.render("home", { usertype: "Admin"})
-    }
-    else if (req.usertype == "Cashier") {
+    if (req.usertype == "Cashier") {
         return res.redirect("/cashpayment");
     }
-    return res.render("login", {message:null});
+    else if(req.usertype != "Admin"){
+        return res.render("login", {message:null});
+    }
+    const promiseFunc1 = () => {
+        const promise1 = new Promise((resolve, reject) => {
+            const query = "SELECT COUNT(*) AS product FROM products";
+            connection.query(query, (err,rows) => {
+                if(err){
+                    return reject("Error while counting number of Product");
+                }
+                const totalProduct = rows[0].product;
+                const query = "SELECT SUM(quantity*cost) AS cost FROM products";
+                connection.query(query, (err, rows) => {
+                    if(err){
+                        return reject("Error while finding Total Cost");
+                    }
+                    const totalCost = rows[0].cost;
+                    const query = "SELECT SUM(quantity) AS quantity FROM products";
+                    connection.query(query, (err, rows) => {
+                        if(err){
+                            return reject("Error while finding total Quantity");
+                        }
+                        const quantity = rows[0].quantity;
+                        const arr1 = [totalProduct, totalCost, quantity] 
+                        resolve(arr1);
+                    })
+
+                })
+            })
+        });
+        return promise1;
+    }
+
+    const promiseFunc2 = () => {
+        const promise2 = new Promise((resolve, reject) => {
+            const query = "SELECT COUNT(*) as count FROM products WHERE quantity > 0 AND DATE_SUB(dateExp, INTERVAL 1 MONTH) < CURDATE() AND dateExp > CURDATE() ORDER BY dateExp";
+            connection.query(query, (err, rows) => {
+                if(err){
+                    return reject("Error while counting Expiring Product");
+                }
+                const expiring = rows[0].count;
+                const query = "SELECT COUNT(*) as count FROM products WHERE dateExp < CURDATE() ORDER BY dateExp";
+                connection.query(query, (err, rows) => {
+                    if(err){
+                        return reject("Error while counting Expired Product");
+                    }
+                    const expired = rows[0].count;
+                    const arr2 = [expiring, expired];
+                    resolve(arr2);
+                })
+                
+            })
+        });
+        return promise2;
+    }
+
+    const promiseFunc3 = () => {
+        const promise3 = new Promise((resolve, reject) => {
+            const query = "SELECT SUM(totalAmount) AS total FROM sales";
+            connection.query(query, (err, rows) => {
+                if(err){
+                    return reject("Error while calculating Total Sales");
+                }
+                const totalSales = rows[0].total;
+                const query = "SELECT SUM(cost*quantity) as loss FROM products WHERE dateExp < CURDATE() ORDER BY dateExp";
+                connection.query(query, (err, rows) => {
+                    if(err){
+                        return reject("Error while calculating Loss Suffered");
+                    }
+                    const loss = rows[0].loss;
+                    const arr3 = [totalSales, loss];
+                    resolve(arr3);
+                })
+            })
+        });
+        return promise3;
+    }
+
+    const promiseFunc4 = () => {
+        const promise4 = new Promise((resolve, reject) => {
+            const query = "SELECT COUNT(*) AS count FROM users WHERE usertype='Cashier'";
+            connection.query(query, (err, rows) => {
+                if(err){
+                    return reject("Error while counting Cashier");
+                }
+                const cashier = rows[0].count;
+                const query = `SELECT fullName FROM users INNER JOIN
+                                (SELECT cashierName FROM (
+                                    SELECT cashierName, SUM(totalAmount) AS totalSales FROM sales GROUP BY cashierName
+                                ) A WHERE totalSales=(
+                                    SELECT MAX(totalSales) FROM (SELECT SUM(totalAmount) AS totalSales FROM sales GROUP BY cashierName) B
+                                )) C
+                                ON users.username = cashierName`
+                connection.query(query, (err, rows) => {
+                    if(err){
+                        return reject("Error while calculating sales by Single Cashier");
+                    }
+                    const cashierName = rows[0].fullName;
+                    const arr4 = [cashier, cashierName];
+                    resolve(arr4);
+                })
+
+            })
+        })
+        return promise4;
+    }
+
+    (async() => {
+        try{
+            const arr1 = await promiseFunc1();
+            const arr2 = await promiseFunc2();
+            const arr3 = await promiseFunc3();
+            const arr4 = await promiseFunc4();
+            return res.render("home",{  usertype: "admin", 
+                                        product: arr1[0], totalCost: arr1[1], quantity: arr1[2],
+                                        expiring: arr2[0], expired: arr2[1],
+                                        totalSales: arr3[0], loss: arr3[1],
+                                        cashiers: arr4[0], cashierName: arr4[1]});
+        }
+        catch(err){
+            console.log(err);
+        }
+    })();
 });
 
 app.post("/", (req, res) => {

@@ -14,21 +14,24 @@
                     <div class="firstColumn">
                         <div class="items">
                             <h4 class="cardsHeading">Items</h4>
-                            <p>Quantity     :   </p>
-                            <p>Total Cost   :   </p>
+                            <div class="quantity">
+                                <p>Total Product    :   <b><%= product %></b></p>
+                                <p class="no">Quantity     :   <b><%= quantity %></b></p>
+                            </div>
+                            <p>Total Cost   :   <b><%= totalCost %></b></p>
                             <a type="button" class="btn btn-primary" href="/product">View Items</a>
                         </div>
                         <div class="totalSales">
                             <h6 class="cardsHeading">Total Sales</h6>
                             <div class="info">
-                                <p>Total Sales Amount     :   </p>
+                                <p>Total Sales Amount     :   <b><%= totalSales %></b></p>
                                 <a type="button" class="btn btn-success" href="/salesreport">View</a>
                             </div>
                         </div>
                         <div class="loss">
                             <h6 class="cardsHeading">Loss Suffered</h6>
                             <div class="info">
-                                <p>Total Loss     :   </p>
+                                <p>Total Loss     :   <b><%= loss %></b></p>
                             </div>
                         </div>
                     </div>
@@ -36,22 +39,24 @@
                         <div class="expiring">
                             <h6 class="cardsHeading">Expiring Soon</h6>
                             <div class="info">
-                                <p>Quantity     :   </p>
+                                <p>Quantity     :   <b><%= expiring %></b></p>
                                 <a type="button" class="btn btn-warning" href="/expiring">View</a>
                             </div>
                         </div>
                         <div class="expired">
                             <h6 class="cardsHeading">Expired Products</h6>
                             <div class="info">
-                                <p>Quantity     :   </p>
+                                <p>Quantity     :   <b><%= expired %></b></p>
                                 <a type="button" class="btn btn-danger" href="/expired">View</a>
                             </div>
                         </div>
                         <div class="cashier">
                             <h4 class="cardsHeading">Cashiers</h4>
-                            <p>Total Cashiers   :   </p>
-                            <p>Top Performer Cashier    :   </p>
-                            <a type="button" class="btn btn-primary" href="/salesreport">View Cashier</a>
+                            <p>Total Cashiers   :   <b><%= cashiers %></b></p>
+                            <% if(cashierName) { %>
+                                <p>Top Performer Cashier    :   <b><%= cashierName %></b></p> 
+                            <% } %>
+                            <a type="button" class="btn btn-primary" href="/cashier">View Cashiers</a>
                         </div>
                     </div>
                 </div>
